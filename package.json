@@ -1,0 +1,27 @@
+{
+  "name": "@adobe/parliament-markdown-cleaner",
+  "version": "1.0.0",
+  "description": "## Contributing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adobe/parliament-markdown-cleaner.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/adobe/parliament-markdown-cleaner/issues"
+  },
+  "homepage": "https://github.com/adobe/parliament-markdown-cleaner#readme",
+  "dependencies": {
+    "html-tags": "^3.1.0",
+    "remark-parse": "^9.0.0",
+    "remark-stringify": "^9.0.1",
+    "shelljs": "^0.8.4",
+    "to-vfile": "^6.1.0",
+    "unified": "^9.2.0"
+  }
+}
