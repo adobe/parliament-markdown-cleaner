@@ -13,6 +13,7 @@
 const unified = require("unified");
 const parse = require("remark-parse");
 const stringify = require("remark-stringify");
+const frontmatter = require("remark-frontmatter");
 const vfile = require("to-vfile");
 const shell = require("shelljs");
 const markdownCleaner = require("./src/markdownCleaner");
@@ -41,6 +42,7 @@ function clean(path) {
         .use(parse)
         .use(markdownCleaner, cleaningOptions.addLineBreaks)
         .use(stringify)
+        .use(frontmatter, ["yaml", "toml"])
         .process(vfile.readSync(`${file.name}`), function (err, file) {
           if (err) {
             console.error(err);
@@ -55,6 +57,7 @@ function clean(path) {
         .use(parse)
         .use(markdownCleaner, cleaningOptions.cleanHtmlNodes, optionalTags)
         .use(stringify)
+        .use(frontmatter, ["yaml", "toml"])
         .process(vfile.readSync(`${file.name}`), function (err, file) {
           if (err) {
             console.error(err);
