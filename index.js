@@ -41,7 +41,9 @@ function clean(path) {
       unified()
         .use(parse)
         .use(markdownCleaner, cleaningOptions.addLineBreaks)
-        .use(stringify)
+        .use(stringify, {
+          incrementListMarker: false,
+        })
         .use(frontmatter, ["yaml", "toml"])
         .process(vfile.readSync(`${file.name}`), function (err, file) {
           if (err) {
@@ -56,7 +58,9 @@ function clean(path) {
       unified()
         .use(parse)
         .use(markdownCleaner, cleaningOptions.cleanHtmlNodes, optionalTags)
-        .use(stringify)
+        .use(stringify, {
+          incrementListMarker: false,
+        })
         .use(frontmatter, ["yaml", "toml"])
         .process(vfile.readSync(`${file.name}`), function (err, file) {
           if (err) {
