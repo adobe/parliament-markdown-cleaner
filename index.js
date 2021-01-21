@@ -67,6 +67,9 @@ function clean(path) {
             console.error(err);
           }
           if (file) {
+            file.contents = file.contents
+              .replace(/\\\[/g, "[")
+              .replace(/\\\</g, "<");
             vfile.writeSync(file);
           }
         });
