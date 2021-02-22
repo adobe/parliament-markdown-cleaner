@@ -31,7 +31,7 @@ function markdownCleaner(cleaningOption, pluginOptionTags = []) {
       } catch (e) {
         throw Error(`${e.message}`);
       }
-    } else {
+    } else if (type !== "code" && type !== "inlineCode") {
       // if the node is not html convert < and > to &lt; and &gt;
       if (node.value) {
         try {
