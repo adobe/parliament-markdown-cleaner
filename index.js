@@ -33,7 +33,10 @@ function clean(path) {
     process.exit(1);
   }
 
-  const files = shell.ls("-RLl", `${path}/**/*.md`);
+  const files = [
+    ...shell.ls("-RLl", `${path}/**/*.md`),
+    ...shell.ls("-RLl", `${path}/.**/*.md`),
+  ];
 
   for (const file of files) {
     if (file.isFile()) {
