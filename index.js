@@ -10,6 +10,8 @@
  *  governing permissions and limitations under the License.
  */
 
+const fs = require("fs");
+const pathUtils = require("path");
 const unified = require("unified");
 const parse = require("remark-parse");
 const stringify = require("remark-stringify");
@@ -24,6 +26,10 @@ const cleaningOptions = {
 };
 
 const optionalTags = [];
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 function clean(path) {
   if (!path) {
@@ -40,6 +46,33 @@ function clean(path) {
 
   for (const file of files) {
     if (file.isFile()) {
+      // Extract inline SVG and convert into react components
+      // Read the contents of the file
+      const data = fs.readFileSync(`${file.name}`, {
+        encoding: "utf8",
+        flag: "r",
+      });
+
+      // Create component name
+      const filename = `Svg${capitalizeFirstLetter(
+        pathUtils.basename(file.name, ".md")
+      )}`;
+
+      let count = 0;
+      const re = /<svg([\s\S]*?)<\/svg>/g;
+
+      // convert inline svg to external svg
+      const convert = (match) => {
+        count++;
+        fs.writeFileSync(`${filename.toLowerCase()}${count}.svg`, match);
+        return `<${filename.toLowerCase()}${count}/>`;
+      };
+
+      // Replace all inline svg's with custom component tags
+      const newFile = data.replace(re, convert);
+      // Write out updated markdown file
+      fs.writeFileSync(file.name, newFile);
+
       // Adds proper line breaks below HTML/JSX tags so they can be processed correctly
       unified()
         .use(parse)
