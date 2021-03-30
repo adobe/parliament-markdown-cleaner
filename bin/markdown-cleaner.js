@@ -13,4 +13,4 @@
 "use strict";
 
 var clean = require("../index");
-clean(process.argv[2]);
+clean(process.argv[2], process.argv[3]);
