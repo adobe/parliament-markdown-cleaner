@@ -71,7 +71,9 @@ function cleanHtmlNodes(nodeValue, pluginOptionTags) {
   function isValidHtmlTag(tag) {
     const pattern = /<\/?(\w+)[^>]*>/;
     const matches = tag.match(pattern);
-    return matches ? parliamentTags.includes(matches[1]) : false;
+    return matches
+      ? parliamentTags.includes(matches[1]) || matches[1].startsWith("svg")
+      : false;
   }
 
   if (!isValidHtmlTag(nodeValue)) {
