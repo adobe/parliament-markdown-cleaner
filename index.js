@@ -18,6 +18,7 @@ const stringify = require("remark-stringify");
 const frontmatter = require("remark-frontmatter");
 const vfile = require("to-vfile");
 const shell = require("shelljs");
+const { default: svgr } = require("@svgr/core");
 const markdownCleaner = require("./src/markdownCleaner");
 
 const cleaningOptions = {
@@ -31,13 +32,15 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function clean(path) {
+function clean(path, templatePath = ".") {
   if (!path) {
     console.error(
       "You must specify a path to markdown docs you would like cleaned"
     );
     process.exit(1);
   }
+
+  const inlineImages = `${templatePath}/inline-images`;
 
   const files = [
     ...shell.ls("-RLl", `${path}/**/*.md`),
@@ -58,13 +61,25 @@ function clean(path) {
         pathUtils.basename(file.name, ".md")
       )}`;
 
+      // Create inline images if it doesn't exist
+      if (!fs.existsSync(inlineImages)) {
+        fs.mkdirSync(inlineImages);
+      }
+
       let count = 0;
       const re = /<svg([\s\S]*?)<\/svg>/g;
 
-      // convert inline svg to external svg
+      // convert inline svg to react component
       const convert = (match) => {
         count++;
-        fs.writeFileSync(`${filename.toLowerCase()}${count}.svg`, match);
+        // convert svg to react component
+        const svgComponent = svgr.sync(match, {}, { componentName: filename });
+        // Write react component
+        fs.writeFileSync(
+          `${inlineImages}/${filename}${count}.js`,
+          svgComponent
+        );
+        // return new svg tag name
         return `<${filename.toLowerCase()}${count}/>`;
       };
 
