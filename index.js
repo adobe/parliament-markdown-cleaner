@@ -108,7 +108,12 @@ function clean(path, templatePath = ".") {
       // Fixes HTML/JSX tags by transforming HTML into markdown or adding closing tags as needed.
       unified()
         .use(parse)
-        .use(markdownCleaner, cleaningOptions.cleanHtmlNodes, optionalTags)
+        .use(
+          markdownCleaner,
+          cleaningOptions.cleanHtmlNodes,
+          optionalTags,
+          file.name
+        )
         .use(stringify, {
           incrementListMarker: false,
         })

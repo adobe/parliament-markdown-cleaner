@@ -12,10 +12,11 @@
 
 const addLineBreaks = require("./addLineBreaks");
 const cleanHtmlNodes = require("./cleanHtmlNodes");
+const extractBase64Images = require("./extractBase64Images");
 
 module.exports = markdownCleaner;
 
-function markdownCleaner(cleaningOption, pluginOptionTags = []) {
+function markdownCleaner(cleaningOption, pluginOptionTags = [], filePath) {
   return cleanMarkdown;
   function cleanMarkdown(node) {
     const type = node && node.type;
@@ -30,6 +31,14 @@ function markdownCleaner(cleaningOption, pluginOptionTags = []) {
         node.value = nodeValue;
       } catch (e) {
         throw Error(`${e.message}`);
+      }
+    } else if (type === `image`) {
+      if (cleaningOption === "cleanHtmlNodes" && node.url.startsWith("data:")) {
+        try {
+          node.url = extractBase64Images(node.url, filePath);
+        } catch (e) {
+          throw Error(`${e.message}`);
+        }
       }
     } else if (type !== "code" && type !== "inlineCode") {
       // if the node is not html convert < and > to &lt; and &gt;
