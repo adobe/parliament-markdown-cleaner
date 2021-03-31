@@ -659,6 +659,18 @@ micromark@~2.11.0:
     debug "^4.0.0"
     parse-entities "^2.0.0"
 
+mime-db@1.46.0:
+  version "1.46.0"
+  resolved "https://artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/mime-db/-/mime-db-1.46.0.tgz#6267748a7f799594de3cbc8cde91def349661cee"
+  integrity sha1-Ymd0in95lZTePLyM3pHe80lmHO4=
+
+mime-types@^2.1.29:
+  version "2.1.29"
+  resolved "https://artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/mime-types/-/mime-types-2.1.29.tgz#1d4ab77da64b91f5f72489df29236563754bb1b2"
+  integrity sha1-HUq3faZLkfX3JInfKSNlY3VLsbI=
+  dependencies:
+    mime-db "1.46.0"
+
 minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
@@ -694,6 +706,13 @@ parent-module@^1.0.0:
   integrity sha1-aR0nCeeMefrjoVZiJFLQB2LKqqI=
   dependencies:
     callsites "^3.0.0"
+
+parse-data-url@^3.0.0:
+  version "3.0.0"
+  resolved "https://artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/parse-data-url/-/parse-data-url-3.0.0.tgz#a7eae0a8a035e972b3f05bb23a06a9bc82b8616a"
+  integrity sha1-p+rgqKA16XKz8FuyOgapvIK4YWo=
+  dependencies:
+    valid-data-url "^3.0.1"
 
 parse-entities@^2.0.0:
   version "2.0.0"
@@ -851,6 +870,16 @@ unist-util-stringify-position@^2.0.0:
   integrity sha1-zOO/oc34W6c3XR1bF73Eytqb2do=
   dependencies:
     "@types/unist" "^2.0.2"
+
+uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha1-gNW1ztJxu5r2xEXyGhoExgbO++I=
+
+valid-data-url@^3.0.1:
+  version "3.0.1"
+  resolved "https://artifactory.corp.adobe.com:443/artifactory/api/npm/npm-adobe-release/valid-data-url/-/valid-data-url-3.0.1.tgz#826c1744e71b5632e847dd15dbd45b9fb38aa34f"
+  integrity sha1-gmwXROcbVjLoR90V29Rbn7OKo08=
 
 vfile-message@^2.0.0:
   version "2.0.4"
