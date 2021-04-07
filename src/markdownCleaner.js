@@ -13,6 +13,7 @@
 const addLineBreaks = require("./addLineBreaks");
 const cleanHtmlNodes = require("./cleanHtmlNodes");
 const extractBase64Images = require("./extractBase64Images");
+const jekyllLinks = require("./jekyllLinks");
 
 module.exports = markdownCleaner;
 
@@ -39,6 +40,12 @@ function markdownCleaner(cleaningOption, pluginOptionTags = [], filePath) {
         } catch (e) {
           throw Error(`${e.message}`);
         }
+      }
+    } else if (type === `link` && cleaningOption === "cleanHtmlNodes") {
+      try {
+        node.url = jekyllLinks(node.url, filePath);
+      } catch (e) {
+        throw Error(`${e.message}`);
       }
     } else if (type !== "code" && type !== "inlineCode") {
       // if the node is not html convert < and > to &lt; and &gt;
