@@ -125,7 +125,8 @@ function clean(path, templatePath = ".") {
           if (file) {
             file.contents = file.contents
               .replace(/\\\[/g, "[")
-              .replace(/\\\</g, "<");
+              .replace(/\\\</g, "<")
+              .replace(/\\&/g, "&");
             vfile.writeSync(file);
           }
         });
