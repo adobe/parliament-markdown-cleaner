@@ -15,6 +15,7 @@ const cleanHtmlNodes = require("./cleanHtmlNodes");
 const extractBase64Images = require("./extractBase64Images");
 const jekyllLinks = require("./jekyllLinks");
 const downloadRemoteImages = require("./downloadRemoteImages");
+const linkOpenApiSpecs = require("./linkOpenApiSpecs");
 
 module.exports = markdownCleaner;
 
@@ -56,6 +57,11 @@ function markdownCleaner(cleaningOption, pluginOptionTags = [], filePath) {
     } else if (type === `link` && cleaningOption === "cleanHtmlNodes") {
       try {
         node.url = jekyllLinks(node.url, filePath);
+      } catch (e) {
+        throw Error(`${e.message}`);
+      }
+      try {
+        node.url = linkOpenApiSpecs(node.url, filePath);
       } catch (e) {
         throw Error(`${e.message}`);
       }
