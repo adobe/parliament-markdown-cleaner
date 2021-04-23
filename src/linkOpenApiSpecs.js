@@ -15,7 +15,11 @@ const path = require("path");
 
 function linkOpenApiSpecs(nodeValue, filePath) {
   if (
-    !nodeValue.startsWith("/") &&
+    !(
+      nodeValue.startsWith("/") ||
+      nodeValue.startsWith("http:") ||
+      nodeValue.startsWith("https:")
+    ) &&
     (nodeValue.endsWith(".json") ||
       nodeValue.endsWith(".yml") ||
       nodeValue.endsWith(".yaml"))
