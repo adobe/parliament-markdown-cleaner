@@ -13,7 +13,7 @@
 const fs = require("fs");
 const path = require("path");
 
-function linkOpenApiSpecs(nodeValue, filePath) {
+function linkOpenApiSpecs(nodeValue, filePath, rootFolder) {
   if (
     !(
       nodeValue.startsWith("/") ||
@@ -34,7 +34,11 @@ function linkOpenApiSpecs(nodeValue, filePath) {
       flag: "r",
     });
     if (data.includes("swagger") || data.includes("openapi")) {
-      return testFilename.startsWith("/") ? testFilename : `/${testFilename}`;
+      let returnValue =
+        testFilename.indexOf(rootFolder) === 0
+          ? testFilename.slice(rootFolder.length)
+          : testFilename;
+      return returnValue.startsWith("/") ? returnValue : `/${returnValue}`;
     }
   }
   return nodeValue;

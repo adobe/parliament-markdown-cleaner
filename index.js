@@ -112,7 +112,8 @@ function clean(path, templatePath = ".") {
           markdownCleaner,
           cleaningOptions.cleanHtmlNodes,
           optionalTags,
-          file.name
+          file.name,
+          path
         )
         .use(stringify, {
           incrementListMarker: false,

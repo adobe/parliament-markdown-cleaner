@@ -19,7 +19,12 @@ const linkOpenApiSpecs = require("./linkOpenApiSpecs");
 
 module.exports = markdownCleaner;
 
-function markdownCleaner(cleaningOption, pluginOptionTags = [], filePath) {
+function markdownCleaner(
+  cleaningOption,
+  pluginOptionTags = [],
+  filePath,
+  rootFolder
+) {
   return cleanMarkdown;
   function cleanMarkdown(node) {
     const type = node && node.type;
@@ -61,7 +66,7 @@ function markdownCleaner(cleaningOption, pluginOptionTags = [], filePath) {
         throw Error(`${e.message}`);
       }
       try {
-        node.url = linkOpenApiSpecs(node.url, filePath);
+        node.url = linkOpenApiSpecs(node.url, filePath, rootFolder);
       } catch (e) {
         throw Error(`${e.message}`);
       }
