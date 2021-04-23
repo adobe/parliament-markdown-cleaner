@@ -14,6 +14,7 @@ const addLineBreaks = require("./addLineBreaks");
 const cleanHtmlNodes = require("./cleanHtmlNodes");
 const extractBase64Images = require("./extractBase64Images");
 const jekyllLinks = require("./jekyllLinks");
+const downloadRemoteImages = require("./downloadRemoteImages");
 
 module.exports = markdownCleaner;
 
@@ -34,11 +35,22 @@ function markdownCleaner(cleaningOption, pluginOptionTags = [], filePath) {
         throw Error(`${e.message}`);
       }
     } else if (type === `image`) {
-      if (cleaningOption === "cleanHtmlNodes" && node.url.startsWith("data:")) {
-        try {
-          node.url = extractBase64Images(node.url, filePath);
-        } catch (e) {
-          throw Error(`${e.message}`);
+      if (cleaningOption === "cleanHtmlNodes") {
+        if (node.url.startsWith("data:")) {
+          try {
+            node.url = extractBase64Images(node.url, filePath);
+          } catch (e) {
+            throw Error(`${e.message}`);
+          }
+        } else if (
+          node.url.startsWith("http://") ||
+          node.url.startsWith("https://")
+        ) {
+          try {
+            node.url = downloadRemoteImages(node.url, filePath);
+          } catch (e) {
+            throw Error(`${e.message}`);
+          }
         }
       }
     } else if (type === `link` && cleaningOption === "cleanHtmlNodes") {
