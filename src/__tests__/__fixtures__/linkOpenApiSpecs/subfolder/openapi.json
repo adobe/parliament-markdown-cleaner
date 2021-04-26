@@ -1,0 +1,1162 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "<hr><br>This documentation describes SDS APIs, that can be broadly categorized into : Index, Ops, ResolveBy. For any questions please contact acp-cs-sds-engineering@adobe.com<br><br>",
+    "version": "\"Version Date: 04/22/2020\"",
+    "title": "SDS API Documentation",
+    "contact": {}
+  },
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "New Optimized IndexService APIs<br/>Client must begin with IndexDirectory API that returns end points for other Index APIs<br/>Index Document API returns links for ResolveBy and Ops requests"
+    },
+    {
+      "name": "Operations API. Supported Operations are: Copy, Move, Package, Discard, Restore and Delete"
+    },
+    {
+      "name": "ResolveBy"
+    }
+  ],
+  "paths": {
+    "/assets": {
+      "get": {
+        "tags": [
+          "New Optimized IndexService APIs<br/>Client must begin with IndexDirectory API that returns end points for other Index APIs<br/>Index Document API returns links for ResolveBy and Ops requests"
+        ],
+        "summary": "Discoverable Assets Document request",
+        "description": "Returns Discoverable Assets Document or 'responsetoolarge' error if the count of discoverable assets exceeds max page size",
+        "operationId": "getDiscoverableAssets",
+        "produces": ["application/vnd.adobecloud.discoverable-assets+json"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "User Authorization token: (e.g. Bearer XXXXXXXXXXXX...)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API Gateway API key, which must be white listed ahead of time to be allowed",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/DiscoverableAssets"
+            }
+          },
+          "400": {
+            "description": "if any invalid input arguments in the request or response too large",
+            "schema": {
+              "$ref": "#/definitions/Problem"
+            }
+          },
+          "500": {
+            "description": "if internal or upstream service error",
+            "schema": {
+              "$ref": "#/definitions/Problem"
+            }
+          }
+        }
+      }
+    },
+    "/assets/:page": {
+      "get": {
+        "tags": [
+          "New Optimized IndexService APIs<br/>Client must begin with IndexDirectory API that returns end points for other Index APIs<br/>Index Document API returns links for ResolveBy and Ops requests"
+        ],
+        "summary": "Discoverable Assets Document paginated request",
+        "description": "Returns user discoverable assets page by page<br/>_embedded entries in children always include api:metadata/repository resource. Based on the embed query parameter value, a user agent can request embedding of api:ac/effective and api:rel/repository resources",
+        "operationId": "getDiscoverableAssetsPage",
+        "produces": ["application/vnd.adobecloud.discoverable-assets+json"],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Token value for Page Start",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of entries requested",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "User Authorization token: (e.g. Bearer XXXXXXXXXXXX...)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API Gateway API key, which must be white listed ahead of time to be allowed",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "embed",
+            "in": "query",
+            "description": "Allowed link relations are - api:rel/repository, api:ac/effective. An example = http://ns.adobe.com/adobecloud/rel/repository",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The _links map includes entries for api:page and api:primary",
+            "schema": {
+              "$ref": "#/definitions/DiscoverableAssets"
+            }
+          },
+          "400": {
+            "description": "if any invalid input arguments in the request",
+            "schema": {
+              "$ref": "#/definitions/Problem"
+            }
+          },
+          "500": {
+            "description": "if internal or upstream service error",
+            "schema": {
+              "$ref": "#/definitions/Problem"
+            }
+          }
+        }
+      }
+    },
+    "/content/ops": {
+      "post": {
+        "tags": [
+          "Operations API. Supported Operations are: Copy, Move, Package, Discard, Restore and Delete"
+        ],
+        "summary": "API for Discard/Restore/Package/Copy/Move/Delete operations",
+        "description": "When success, returns 200 for Discard/Restore operations, 202 for Copy/Package operations 202/204 for delete operations. For 202, client needs to wait on monitor URL returned via Header \"Location\" until  monitor URL returns non 202 status",
+        "operationId": "topLevelOps",
+        "consumes": ["*/*"],
+        "produces": [
+          "application/json",
+          "application/vnd.adobecloud.directory+json"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "User Authorization token: (e.g. Bearer XXXXXXXXXXXX...)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "API Gateway API key, which must be white listed ahead of time to be allowed",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Perform operation on directory only if matching this etag value for single ops",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Ops request",
+            "description": "Ops request payload in Json schema, either an array of requests or a single request.<br/>Note: Model/Schema shown here for single request only, but API accepts an array of requests",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OpsRequestPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - For Discard and Restore operations. 202/204 for Other operations",
+            "schema": {
+              "$ref": "#/definitions/OpsResponse"
+            },
+            "headers": {
+              "etag": {
+                "type": "string",
+                "description": "ETag value"
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted - For Copy, Delete, Package operations",
+            "schema": {
+              "$ref": "#/definitions/OpsResponse"
+            },
+            "headers": {
+              "etag": {
+                "type": "string",
+                "description": "ETag value"
+              },
+              "location": {
+                "type": "string",
+                "description": "Montior URL"
+              }
+            }
+          },
+          "204": {
+            "description": "No Content for Delete operations",
+            "schema": {
+              "$ref": "#/definitions/OpsResponse"
+            },
+            "headers": {
+              "etag": {
+                "type": "string",
+                "description": "ETag value"
+              },
+              "location": {
+                "type": "string",
+                "description": "Montior URL"
+              }
+            }
+          },
+          "307": {
+            "description": "if request is temporarily redirected",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "400": {
+            "description": "if the repo id provided is empty or invalid / source or target fields not valid",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "if user token is not valid",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "403": {
+            "description": "if user does not have permission to perform the operation or directory state is discarded",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "404": {
+            "description": "if directory does not exist for given source path",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "409": {
+            "description": "if directory already exist for given target path",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "412": {
+            "description": "if etag is not valid",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          }
+        }
+      }
+    },
+    "/content/resolve": {
+      "get": {
+        "tags": ["ResolveBy"],
+        "summary": "Handle ResolveBy requests either by assetId or path",
+        "description": "Returns the resolved assets including URL templates",
+        "operationId": "topLevelResolveBy",
+        "produces": [
+          "application/json",
+          "application/vnd.adobecloud.directory+json"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "User Authorization token: (e.g. Bearer XXXXXXXXXXXX...)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "API Gateway API key, which must be white listed ahead of time to be allowed",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "description": "A list of ETags which will be compared to the one for this resource. If any match, a 304 will be returned without data and if none match or not provided, it will return the resource",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Directory Id to resolve by.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "repositoryId",
+            "in": "query",
+            "description": "RepositoryId of the resolve request, and mandatory for ResolveBy Path only",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "description": "Directory Path to resolve by. Only one of the arguments - assetId or path can be specified",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/DirectoryResponse"
+            }
+          },
+          "304": {
+            "description": "if if-none-match provided and matches etag on resource",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "404": {
+            "description": "if the asset does not exist",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          }
+        }
+      }
+    },
+    "/index": {
+      "get": {
+        "tags": [
+          "New Optimized IndexService APIs<br/>Client must begin with IndexDirectory API that returns end points for other Index APIs<br/>Index Document API returns links for ResolveBy and Ops requests"
+        ],
+        "summary": "Index Document request",
+        "description": "Returns user's assigned directory, user's repository and regions where discoverable assets exist<br/>Also includes links at top level for api:resolve/id, api:resolve/path and api:ops requests",
+        "operationId": "getIndexDocument",
+        "produces": ["application/vnd.adobecloud.index+json"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "User Authorization token: (e.g. Bearer XXXXXXXXXXXX...)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API Gateway API key, which must be white listed ahead of time to be allowed",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "description": "A list of ETags which will be compared to the one for this resource. If any match, a 304 will be returned without data and if none match or not provided, it will return the resource",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The _links map includes entries for api:resolve/id, api:resolve/path, api:ops",
+            "schema": {
+              "$ref": "#/definitions/IndexDocument"
+            },
+            "headers": {
+              "etag": {
+                "type": "string",
+                "description": "ETag value"
+              }
+            }
+          },
+          "304": {
+            "description": "if if-none-match provided and matches etag on resource",
+            "schema": {
+              "$ref": "#/definitions/Problem"
+            }
+          }
+        }
+      }
+    },
+    "/repositories": {
+      "get": {
+        "tags": [
+          "New Optimized IndexService APIs<br/>Client must begin with IndexDirectory API that returns end points for other Index APIs<br/>Index Document API returns links for ResolveBy and Ops requests"
+        ],
+        "summary": "Discoverable Repositories Request",
+        "description": "Returns list of repositories(ESM and USM) where user has discoverable assets<br/>Repository entries include _embed information for api:rel/repository resource",
+        "operationId": "getDiscoverableRepositories",
+        "produces": [
+          "application/vnd.adobecloud.discoverable-repositories+json"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "User Authorization token: (e.g. Bearer XXXXXXXXXXXX...)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API Gateway API key, which must be white listed ahead of time to be allowed",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/DiscoverableRepositories"
+            }
+          },
+          "500": {
+            "description": "if internal or upstream service error",
+            "schema": {
+              "$ref": "#/definitions/Problem"
+            }
+          }
+        }
+      }
+    },
+    "/repositories/:page": {
+      "get": {
+        "tags": [
+          "New Optimized IndexService APIs<br/>Client must begin with IndexDirectory API that returns end points for other Index APIs<br/>Index Document API returns links for ResolveBy and Ops requests"
+        ],
+        "summary": "Discoverable Repositories Paginated Request",
+        "description": "Returns list of repositories(ESM and USM) page by page where user has discoverable assets<br/>Repository entries include _embed information for api:rel/repository resource",
+        "operationId": "getDiscoverableRepositoriesPage",
+        "produces": [
+          "application/vnd.adobecloud.discoverable-repositories+json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Token value for Page Start",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of entries requested",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "User Authorization token: (e.g. Bearer XXXXXXXXXXXX...)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API Gateway API key, which must be white listed ahead of time to be allowed",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "X-Gw-Ims-User-Id",
+            "in": "header",
+            "description": "IMS User Id as provided by AdobeIO",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Gw-Ims-Region",
+            "in": "header",
+            "description": "IMS Region as provided by AdobeIO",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/DiscoverableRepositories"
+            }
+          },
+          "500": {
+            "description": "if internal or upstream service error",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "New Optimized IndexService APIs<br/>Client must begin with IndexDirectory API that returns end points for other Index APIs<br/>Index Document API returns links for ResolveBy and Ops requests"
+        ],
+        "summary": "Index Root Directory request",
+        "description": "Returns links for other Index APIs<br/>User agents must begin with Index Root Directory listing which returns links to other Index Repository resources",
+        "operationId": "getIndexDirectory",
+        "produces": ["application/vnd.adobecloud.directory+json"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/IndexDirectoryResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "BaseResponse": {
+      "type": "object",
+      "required": ["code"],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "DirectoryProperties": {
+      "type": "object",
+      "required": [
+        "dc:format",
+        "id",
+        "repo:assetId",
+        "repo:createDate",
+        "repo:modifyDate",
+        "repo:name",
+        "repo:path",
+        "repo:state"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "repo:id": {
+          "type": "string",
+          "description": "@Deprecated. Please use assetId"
+        },
+        "repo:assetId": {
+          "type": "string"
+        },
+        "repo:name": {
+          "type": "string"
+        },
+        "repo:path": {
+          "type": "string"
+        },
+        "dc:format": {
+          "type": "string"
+        },
+        "repo:createdDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "@Deprecated. Please use createDate"
+        },
+        "repo:lastModifiedDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "@Deprecated. Please use modifyDate"
+        },
+        "repo:createDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:modifyDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:state": {
+          "type": "string",
+          "enum": ["ACTIVE", "DISCARDED", "DISCARDED_PARENT"]
+        },
+        "repo:etag": {
+          "type": "string"
+        }
+      }
+    },
+    "DirectoryResponse": {
+      "type": "object",
+      "required": [
+        "_links",
+        "_page",
+        "children",
+        "dc:format",
+        "repo:assetId",
+        "repo:createDate",
+        "repo:createdDate",
+        "repo:lastModifiedDate",
+        "repo:modifyDate",
+        "repo:name",
+        "repo:path",
+        "repo:state"
+      ],
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SubDirectoryResponse"
+          }
+        },
+        "_page": {
+          "description": "This is the schema for a page object",
+          "$ref": "#/definitions/PageResponse"
+        },
+        "_links": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/Links"
+        },
+        "id": {
+          "type": "string"
+        },
+        "repo:id": {
+          "type": "string",
+          "description": "@Deprecated. Please use assetId"
+        },
+        "repo:assetId": {
+          "type": "string"
+        },
+        "repo:name": {
+          "type": "string"
+        },
+        "repo:path": {
+          "type": "string"
+        },
+        "dc:format": {
+          "type": "string"
+        },
+        "repo:createdDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "@Deprecated. Please use createDate"
+        },
+        "repo:lastModifiedDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "@Deprecated. Please use modifyDate"
+        },
+        "repo:createDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:modifyDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:state": {
+          "type": "string",
+          "enum": ["ACTIVE", "DISCARDED", "DISCARDED_PARENT"]
+        },
+        "repo:discardedBy": {
+          "type": "string"
+        },
+        "repo:discardedDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "_embedded": {
+          "description": "This is the schema for an embedded object",
+          "$ref": "#/definitions/EmbeddedResponse"
+        }
+      }
+    },
+    "DiscoverableAssets": {
+      "type": "object",
+      "required": ["_links", "children"],
+      "properties": {
+        "_links": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/Links"
+        },
+        "_page": {
+          "description": "This is the schema for a page object",
+          "$ref": "#/definitions/PageResponse"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiscoverableResource"
+          }
+        }
+      }
+    },
+    "DiscoverableRepositories": {
+      "type": "object",
+      "required": ["_links", "children"],
+      "properties": {
+        "_links": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/Links"
+        },
+        "_page": {
+          "description": "This is the schema for a page object",
+          "$ref": "#/definitions/PageResponse"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiscoverableResource"
+          }
+        }
+      }
+    },
+    "DiscoverableResource": {
+      "type": "object",
+      "required": ["_embedded"],
+      "properties": {
+        "_embedded": {
+          "description": "This is the schema for a map of embedded entries. The entry can embed any of: api:metadata/repository, api:rel/repository, api:primary depending upon Index API",
+          "$ref": "#/definitions/Embedded"
+        }
+      }
+    },
+    "Embedded": {
+      "type": "object"
+    },
+    "EmbeddedResponse": {
+      "type": "object"
+    },
+    "IndexDirectoryResponse": {
+      "type": "object",
+      "properties": {
+        "repo:path": {
+          "type": "string"
+        },
+        "repo:name": {
+          "type": "string"
+        },
+        "dc:format": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RepositoryMetadataProperties"
+          }
+        },
+        "_links": {
+          "$ref": "#/definitions/Links"
+        }
+      }
+    },
+    "IndexDocument": {
+      "type": "object",
+      "required": ["_links", "children", "repo:regions"],
+      "properties": {
+        "repo:regions": {
+          "type": "array",
+          "description": "list of regions where user has discoverable assets",
+          "items": {
+            "type": "string"
+          }
+        },
+        "_links": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/Links"
+        },
+        "children": {
+          "type": "array",
+          "description": "List of assigned storage entries. First entry shall always be user's default assigned directory",
+          "items": {
+            "$ref": "#/definitions/DiscoverableResource"
+          }
+        }
+      }
+    },
+    "LinkResponse": {
+      "type": "object",
+      "required": ["href", "templated"],
+      "properties": {
+        "href": {
+          "type": "string"
+        },
+        "templated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Links": {
+      "type": "object",
+      "properties": {
+        "linksResponse": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/LinkResponse"
+        }
+      }
+    },
+    "OpsRef": {
+      "type": "object",
+      "properties": {
+        "repo:repositoryId": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string",
+          "description": "For delete and restore operations, only assetId or assetId based href can be specified"
+        },
+        "repo:id": {
+          "type": "string"
+        },
+        "repo:assetId": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        },
+        "if-match": {
+          "type": "string"
+        },
+        "if-none-match": {
+          "type": "string"
+        }
+      }
+    },
+    "OpsRequestPayload": {
+      "type": "object",
+      "required": ["op", "target"],
+      "properties": {
+        "op": {
+          "type": "string",
+          "description": "Specifies Operation. Allowed values(case insensitive) = Copy, Move, Discard, Restore, Delete, Package"
+        },
+        "id": {
+          "type": "string",
+          "description": "user agent-assigned identifier for this operation"
+        },
+        "source": {
+          "description": "This is the schema for operations source or target. Only one of the properties path / assetId / href  can be specified<br/>. Please Note:<br/>1. href as an asset reference for a source or a target is sufficient in itself<br/>2. repo:assetId parameter can be specified as an asset reference for a source or a target.<br/>3.When repo:path parameter is specified to refer to an asset, repo:repositoryId must be specified",
+          "allOf": [{ "$ref": "#/definitions/OpsRef" }]
+        },
+        "target": {
+          "description": "This is the schema for operations source or target. Only one of the properties path / assetId / href  can be specified<br/>. Please Note:<br/>1. href as an asset reference for a source or a target is sufficient in itself<br/>2. repo:assetId parameter can be specified as an asset reference for a source or a target.<br/>3.When repo:path parameter is specified to refer to an asset, repo:repositoryId must be specified",
+          "allOf": [{ "$ref": "#/definitions/OpsRef" }]
+        },
+        "value": {
+          "description": "@Deprecated: This is the schema for a ops value",
+          "allOf": [{ "$ref": "#/definitions/OpsValue" }]
+        },
+        "max_package_size": {
+          "type": "string",
+          "description": "Specifies max package size, applicable for Package operation"
+        },
+        "intermediates": {
+          "type": "boolean",
+          "description": "true if target intermediate directory hierarchy to be created, applicable for Copy and Move Operations"
+        },
+        "recursive": {
+          "type": "boolean",
+          "description": "true if operation to be done recursively, applicable for delete only"
+        },
+        "name": {
+          "type": "string",
+          "description": "Specifies new name for Restore, applicable only for restore only"
+        }
+      }
+    },
+    "OpsResponse": {
+      "type": "object",
+      "required": ["asset", "op", "target"],
+      "properties": {
+        "op": {
+          "type": "string"
+        },
+        "source": {
+          "description": "This is the schema for operations source or target. Only one of the properties path / assetId / href  can be specified<br/>. Please Note:<br/>1. href as an asset reference for a source or a target is sufficient in itself<br/>2. repo:assetId parameter can be specified as an asset reference for a source or a target.<br/>3.When repo:path parameter is specified to refer to an asset, repo:repositoryId must be specified",
+          "allOf": [{ "$ref": "#/definitions/OpsRef" }]
+        },
+        "target": {
+          "description": "This is the schema for operations source or target. Only one of the properties path / assetId / href  can be specified<br/>. Please Note:<br/>1. href as an asset reference for a source or a target is sufficient in itself<br/>2. repo:assetId parameter can be specified as an asset reference for a source or a target.<br/>3.When repo:path parameter is specified to refer to an asset, repo:repositoryId must be specified",
+          "allOf": [{ "$ref": "#/definitions/OpsRef" }]
+        },
+        "asset": {
+          "description": "This is the schema for a directory properties",
+          "allOf": [{ "$ref": "#/definitions/DirectoryProperties" }]
+        },
+        "max_package_size": {
+          "type": "string"
+        },
+        "intermediates": {
+          "type": "boolean"
+        },
+        "recursive": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OpsValue": {
+      "type": "object",
+      "properties": {
+        "max_package_size": {
+          "type": "string"
+        }
+      }
+    },
+    "PageResponse": {
+      "type": "object",
+      "required": ["count", "orderBy"],
+      "properties": {
+        "orderBy": {
+          "type": "string"
+        },
+        "start": {
+          "type": "string"
+        },
+        "next": {
+          "type": "string"
+        },
+        "property": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Problem": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "A URI reference that identifies the problem type."
+        },
+        "title": {
+          "type": "string",
+          "description": "A short, human-readable summary of the problem type."
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The HTTP status code."
+        },
+        "detail": {
+          "type": "string",
+          "description": "A human-readable explanation specific to this occurrence of the problem."
+        },
+        "_links": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/Links"
+        }
+      }
+    },
+    "RepositoryMetadataProperties": {
+      "type": "object",
+      "properties": {
+        "repo:repositoryId": {
+          "type": "string"
+        },
+        "repo:id": {
+          "type": "string",
+          "description": "@Deprecated. Please use assetId"
+        },
+        "repo:assetId": {
+          "type": "string"
+        },
+        "repo:name": {
+          "type": "string"
+        },
+        "repo:path": {
+          "type": "string"
+        },
+        "repo:homeFor": {
+          "type": "string",
+          "description": "@Deprecated"
+        },
+        "dc:format": {
+          "type": "string"
+        },
+        "repo:createDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:createdBy": {
+          "type": "string"
+        },
+        "repo:ModifyDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:modifiedBy": {
+          "type": "string"
+        },
+        "repo:version": {
+          "type": "string"
+        },
+        "repo:size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "repo:etag": {
+          "type": "string"
+        },
+        "tiff:imageWidth": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tiff:imageHeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "repo:state": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "DISCARDED",
+            "ACTIVE_",
+            "DISCARDED_",
+            "DISCARDED_PARENT",
+            "DISCARDED_PARENT_"
+          ]
+        },
+        "_links": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/Links"
+        }
+      }
+    },
+    "Response": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entity": {
+          "type": "object"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "SubDirectoryResponse": {
+      "type": "object",
+      "required": [
+        "_links",
+        "dc:format",
+        "repo:assetId",
+        "repo:createDate",
+        "repo:createdDate",
+        "repo:lastModifiedDate",
+        "repo:modifyDate",
+        "repo:name",
+        "repo:path",
+        "repo:state"
+      ],
+      "properties": {
+        "_links": {
+          "description": "This is the schema for a link object",
+          "$ref": "#/definitions/Links"
+        },
+        "id": {
+          "type": "string"
+        },
+        "repo:id": {
+          "type": "string",
+          "description": "@Deprecated. Please use assetId"
+        },
+        "repo:assetId": {
+          "type": "string"
+        },
+        "repo:name": {
+          "type": "string"
+        },
+        "repo:path": {
+          "type": "string"
+        },
+        "dc:format": {
+          "type": "string"
+        },
+        "repo:createdDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "@Deprecated. Please use createDate"
+        },
+        "repo:lastModifiedDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "@Deprecated. Please use modifyDate"
+        },
+        "repo:createDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:modifyDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repo:state": {
+          "type": "string",
+          "enum": ["ACTIVE", "DISCARDED", "DISCARDED_PARENT"]
+        },
+        "repo:discardedBy": {
+          "type": "string"
+        },
+        "repo:discardedDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "_embedded": {
+          "description": "This is the schema for an embedded object",
+          "$ref": "#/definitions/EmbeddedResponse"
+        }
+      }
+    }
+  }
+}

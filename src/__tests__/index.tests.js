@@ -10,8 +10,60 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe("make tests run", () => {
+const linkOpenApiSpecs = require("../linkOpenApiSpecs");
+
+const cwd = process.cwd();
+
+describe("linkOpenApiSpecs", () => {
   it("is truthy", () => {
-    expect(true).toBeTruthy();
+    expect(linkOpenApiSpecs).toBeTruthy();
+  });
+  it("OpenAPI spec in same folder", () => {
+    const value = linkOpenApiSpecs(
+      "openapi.json",
+      `${cwd}/src/__tests__/__fixtures__/linkOpenApiSpecs/linkopenapispecs.md`,
+      `${cwd}`
+    );
+    expect(value).toBe(
+      `/src/__tests__/__fixtures__/linkOpenApiSpecs/openapi.json`
+    );
+  });
+  it("Not OpenAPI spec in same folder", () => {
+    const value = linkOpenApiSpecs(
+      "notopenapi.json",
+      `${cwd}/src/__tests__/__fixtures__/linkOpenApiSpecs/linkopenapispecs.md`,
+      `${cwd}`
+    );
+    expect(value).toBe(`notopenapi.json`);
+  });
+  it("OpenAPI spec in sub folder", () => {
+    const value = linkOpenApiSpecs(
+      "subfolder/openapi.json",
+      `${cwd}/src/__tests__/__fixtures__/linkOpenApiSpecs/linkopenapispecs.md`,
+      `${cwd}`
+    );
+    expect(value).toBe(
+      `/src/__tests__/__fixtures__/linkOpenApiSpecs/subfolder/openapi.json`
+    );
+  });
+  it("OpenAPI spec in relative sub folder", () => {
+    const value = linkOpenApiSpecs(
+      "./subfolder/openapi.json",
+      `${cwd}/src/__tests__/__fixtures__/linkOpenApiSpecs/linkopenapispecs.md`,
+      `${cwd}`
+    );
+    expect(value).toBe(
+      `/src/__tests__/__fixtures__/linkOpenApiSpecs/subfolder/openapi.json`
+    );
+  });
+  it("OpenAPI spec in absolute sub folder", () => {
+    const value = linkOpenApiSpecs(
+      "/src/__tests__/__fixtures__/linkOpenApiSpecs/subfolder/openapi.json",
+      `${cwd}/src/__tests__/__fixtures__/linkOpenApiSpecs/linkopenapispecs.md`,
+      `${cwd}`
+    );
+    expect(value).toBe(
+      `/src/__tests__/__fixtures__/linkOpenApiSpecs/subfolder/openapi.json`
+    );
   });
 });
