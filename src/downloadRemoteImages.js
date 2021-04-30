@@ -15,8 +15,16 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const download = require("download");
 
+const allowList = ["img.shields.io"];
+
 function downloadRemoteImages(nodeValue, filePath) {
-  const extension = new URL(nodeValue).pathname
+  const imageUrl = new URL(nodeValue);
+
+  if (allowList.includes(imageUrl.hostname)) {
+    return nodeValue;
+  }
+
+  const extension = new URL(imageUrl).pathname
     .split("/")
     .pop()
     .split(".")

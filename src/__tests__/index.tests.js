@@ -10,9 +10,25 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const downloadRemoteImages = require("../downloadRemoteImages");
 const linkOpenApiSpecs = require("../linkOpenApiSpecs");
 
 const cwd = process.cwd();
+
+describe("downloadRemoteImages", () => {
+  it("is truthy", () => {
+    expect(downloadRemoteImages).toBeTruthy();
+  });
+  it("Domains on allow list to remain unchanged", () => {
+    const value = downloadRemoteImages(
+      "https://img.shields.io/static/v1?label=Audience&message=Anyone&color=red",
+      `${cwd}/src/__tests__/__fixtures__/downloadRemoteImages/downloadRemoteImages.md`
+    );
+    expect(value).toBe(
+      `https://img.shields.io/static/v1?label=Audience&message=Anyone&color=red`
+    );
+  });
+});
 
 describe("linkOpenApiSpecs", () => {
   it("is truthy", () => {
