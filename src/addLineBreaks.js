@@ -28,6 +28,7 @@ function addLineBreaks(nodeValue) {
   const hasParagraphTags =
     nodeValue.includes("<p>") || nodeValue.includes("</p>");
   const openImage = nodeValue.match(/<img\s*(.*?)([^\/])[^](?<=\"|\"\s+)>/g);
+  const openCol = nodeValue.match(/<col\b[^/>]*>/g);
 
   // If paragraph tags (`<p></p>`) are not removed first, they can hide,
   // the 'bad tags' that will break the build during MDX/JSX processing.
@@ -41,6 +42,14 @@ function addLineBreaks(nodeValue) {
   // Close open img tags
   if (openImage) {
     replaceTag(openImage, openImage[0].split(">").join("/>"));
+  }
+
+  // Close open col tags
+  if (openCol) {
+    openCol.forEach((colTag) => {
+      let fixedTag = colTag.split(colTag).join(colTag.split(">").join("/>"));
+      nodeValue = nodeValue.split(colTag).join(fixedTag);
+    });
   }
 
   // If there are HTML tables in the markdown, don't add line breaks,
