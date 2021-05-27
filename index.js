@@ -71,16 +71,25 @@ function clean(path, templatePath = ".") {
 
       // convert inline svg to react component
       const convert = (match) => {
-        count++;
-        // convert svg to react component
-        const svgComponent = svgr.sync(match, {}, { componentName: filename });
-        // Write react component
-        fs.writeFileSync(
-          `${inlineImages}/${filename}${count}.js`,
-          svgComponent
-        );
-        // return new svg tag name
-        return `<${filename.toLowerCase()}${count}/>`;
+        try {
+          count++;
+          // convert svg to react component
+          const svgComponent = svgr.sync(
+            match,
+            {},
+            { componentName: filename }
+          );
+          // Write react component
+          fs.writeFileSync(
+            `${inlineImages}/${filename}${count}.js`,
+            svgComponent
+          );
+          // return new svg tag name
+          return `<${filename.toLowerCase()}${count}/>`;
+        } catch (error) {
+          console.error("invalid svg");
+          return match;
+        }
       };
 
       // Replace all inline svg's with custom component tags
