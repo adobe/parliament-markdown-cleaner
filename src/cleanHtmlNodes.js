@@ -10,7 +10,7 @@
  *  governing permissions and limitations under the License.
  */
 const htmlTags = require("html-tags");
-const parliamentTags = ["newtonbutton", ...htmlTags];
+const parliamentTags = ["jsonschema", "newtonbutton", ...htmlTags];
 
 module.exports = cleanHtmlNodes;
 

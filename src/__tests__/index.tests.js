@@ -13,8 +13,23 @@ governing permissions and limitations under the License.
 const downloadRemoteImages = require("../downloadRemoteImages");
 const linkOpenApiSpecs = require("../linkOpenApiSpecs");
 const addLineBreaks = require("../addLineBreaks");
+const cleanHtmlNodes = require("../cleanHtmlNodes");
 
 const cwd = process.cwd();
+
+describe("cleanHtmlNodes", () => {
+  it("is truthy", () => {
+    expect(cleanHtmlNodes).toBeTruthy();
+  });
+  it("does not clean Newton Button tags", () => {
+    const value = cleanHtmlNodes(`<newtonbutton recipe="test" />`, []);
+    expect(value).toBe(`<newtonbutton recipe="test" />`);
+  });
+  it("does not clean JSON Schema tags", () => {
+    const value = cleanHtmlNodes(`<jsonschema spec="{}" />`, []);
+    expect(value).toBe(`<jsonschema spec="{}" />`);
+  });
+});
 
 describe("downloadRemoteImages", () => {
   it("is truthy", () => {
