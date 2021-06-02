@@ -29,16 +29,18 @@ function linkOpenApiSpecs(nodeValue, filePath, rootFolder) {
     const filename = path.basename(nodeValue);
     const testFilename = path.join(originalBaseName, basename, filename);
 
-    const data = fs.readFileSync(testFilename, {
-      encoding: "utf8",
-      flag: "r",
-    });
-    if (data.includes("swagger") || data.includes("openapi")) {
-      let returnValue =
-        testFilename.indexOf(rootFolder) === 0
-          ? testFilename.slice(rootFolder.length)
-          : testFilename;
-      return returnValue.startsWith("/") ? returnValue : `/${returnValue}`;
+    if (fs.existsSync(testFilename)) {
+      const data = fs.readFileSync(testFilename, {
+        encoding: "utf8",
+        flag: "r",
+      });
+      if (data.includes("swagger") || data.includes("openapi")) {
+        let returnValue =
+          testFilename.indexOf(rootFolder) === 0
+            ? testFilename.slice(rootFolder.length)
+            : testFilename;
+        return returnValue.startsWith("/") ? returnValue : `/${returnValue}`;
+      }
     }
   }
   return nodeValue;

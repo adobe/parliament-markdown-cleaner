@@ -98,6 +98,14 @@ describe("linkOpenApiSpecs", () => {
       `/src/__tests__/__fixtures__/linkOpenApiSpecs/subfolder/openapi.json`
     );
   });
+  it("OpenAPI spec file not in repo", () => {
+    const value = linkOpenApiSpecs(
+      "api/notfound.yaml",
+      `${cwd}/src/__tests__/__fixtures__/linkOpenApiSpecs/linkopenapispecs.md`,
+      `${cwd}`
+    );
+    expect(value).toBe(`api/notfound.yaml`);
+  });
 });
 
 describe("addLineBreaks", () => {
