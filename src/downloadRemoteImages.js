@@ -31,22 +31,23 @@ function downloadRemoteImages(nodeValue, filePath) {
     .split(".")
     .pop();
   const basename = path.dirname(filePath);
-  const filename = `${basename}/${uuidv4()}.${extension}`;
+  const filename = `${uuidv4()}.${extension}`;
+  const fullFilename = `${basename}/${filename}`;
 
   try {
     // download remote file
     childProcess.execFileSync(
       "curl",
-      ["--silent", "-L", "-o", filename, nodeValue],
+      ["--silent", "-L", "-o", fullFilename, nodeValue],
       {}
     );
 
-    const bytes = fs.readFileSync(filename);
-    const size = fs.lstatSync(filename).size;
+    const bytes = fs.readFileSync(fullFilename);
+    const size = fs.lstatSync(fullFilename).size;
     if (isBinaryFileSync(bytes, size)) {
       return `./${filename}`;
     } else {
-      fs.removeSync(filename);
+      fs.removeSync(fullFilename);
       return nodeValue;
     }
   } catch (error) {
