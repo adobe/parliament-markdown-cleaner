@@ -21,7 +21,6 @@
   "homepage": "https://github.com/adobe/parliament-markdown-cleaner#readme",
   "dependencies": {
     "@svgr/core": "^5.5.0",
-    "download": "^8.0.0",
     "html-tags": "^3.1.0",
     "isbinaryfile": "^4.0.8",
     "jest": "^26.6.3",
