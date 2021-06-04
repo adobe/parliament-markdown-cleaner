@@ -44,6 +44,13 @@ describe("downloadRemoteImages", () => {
       `https://img.shields.io/static/v1?label=Audience&message=Anyone&color=red`
     );
   });
+  it("Invalid image download leaves node unchanged", () => {
+    const value = downloadRemoteImages(
+      "https://localhost:8888/this_file_doesnt_exist.png",
+      `${cwd}/src/__tests__/__fixtures__/downloadRemoteImages/downloadRemoteImages.md`
+    );
+    expect(value).toBe(`https://localhost:8888/this_file_doesnt_exist.png`);
+  });
 });
 
 describe("linkOpenApiSpecs", () => {
