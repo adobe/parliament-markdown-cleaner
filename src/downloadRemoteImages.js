@@ -10,10 +10,11 @@
  *  governing permissions and limitations under the License.
  */
 
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const download = require("download");
+const childProcess = require("child_process");
+const isBinaryFileSync = require("isbinaryfile").isBinaryFileSync;
 
 const allowList = ["img.shields.io"];
 
@@ -30,14 +31,28 @@ function downloadRemoteImages(nodeValue, filePath) {
     .split(".")
     .pop();
   const basename = path.dirname(filePath);
-  const filename = `${uuidv4()}.${extension}`;
+  const filename = `${basename}/${uuidv4()}.${extension}`;
 
-  // download remote file
-  (async () => {
-    fs.writeFileSync(`${basename}/${filename}`, await download(nodeValue));
-  })();
+  try {
+    // download remote file
+    childProcess.execFileSync(
+      "curl",
+      ["--silent", "-L", "-o", filename, nodeValue],
+      {}
+    );
 
-  return `./${filename}`;
+    const bytes = fs.readFileSync(filename);
+    const size = fs.lstatSync(filename).size;
+    if (isBinaryFileSync(bytes, size)) {
+      return `./${filename}`;
+    } else {
+      fs.removeSync(filename);
+      return nodeValue;
+    }
+  } catch (error) {
+    // console.log(error);
+    return nodeValue;
+  }
 }
 
 module.exports = downloadRemoteImages;
